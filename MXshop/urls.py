@@ -1,5 +1,6 @@
 from django.urls import path,include,re_path
 import xadmin
+from django.views.generic import TemplateView
 from django.views.static import serve
 from rest_framework_jwt.views import obtain_jwt_token
 
@@ -7,10 +8,10 @@ from MXshop.settings import MEDIA_ROOT
 # from goods.view_base import GoodsListView
 from rest_framework.authtoken import views
 from rest_framework.documentation import include_docs_urls
-from goods.views import GoodsListViewSet,CategoryViewSet
+from goods.views import GoodsListViewSet, CategoryViewSet, BannerViewset, IndexCategoryViewset
 from rest_framework.routers import DefaultRouter
 
-from trade.views import ShoppingCartViewset, OrderViewset
+from trade.views import ShoppingCartViewset, OrderViewset, AlipayView
 from user_operation.views import UserFavViewset, LeavingMessageViewset, AddressViewset
 from users.views import SmsCodeViewset, UserViewset
 
@@ -33,6 +34,10 @@ router.register(r'address',AddressViewset , basename="address")
 router.register(r'shopcarts', ShoppingCartViewset, basename="shopcarts")
 # 配置订单的url
 router.register(r'orders', OrderViewset, basename="orders")
+# 配置首页轮播图的url
+router.register(r'banners',BannerViewset,basename='banners')
+# 首页系列商品展示url
+router.register(r'indexgoods', IndexCategoryViewset, base_name="indexgoods")
 urlpatterns = [
     path('xadmin/', xadmin.site.urls),
     path('api-auth/',include('rest_framework.urls')),
@@ -49,6 +54,9 @@ urlpatterns = [
     path('jwt-auth/', obtain_jwt_token),
     # jwt的认证接口
     path('login/', obtain_jwt_token ),
-
+    # 配置支付宝支付相关接口的url
+    path('alipay/return/', AlipayView.as_view()),
+    # 首页
+    path('index/',TemplateView.as_view(template_name='index.html'),name='index')
 
 ]
